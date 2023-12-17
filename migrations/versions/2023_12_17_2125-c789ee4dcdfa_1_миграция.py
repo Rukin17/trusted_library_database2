@@ -1,8 +1,8 @@
-"""Первая миграция
+"""1  миграция
 
-Revision ID: af29e266d0d5
+Revision ID: c789ee4dcdfa
 Revises: 
-Create Date: 2023-11-30 18:52:00.643445
+Create Date: 2023-12-17 21:25:43.127251
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'af29e266d0d5'
+revision: str = 'c789ee4dcdfa'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -94,17 +94,19 @@ def upgrade() -> None:
     op.create_index(op.f('ix_managers_id'), 'managers', ['id'], unique=False)
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('admin', sa.Boolean(), nullable=True),
-    sa.Column('approver', sa.Boolean(), nullable=True),
-    sa.Column('manager', sa.Boolean(), nullable=True),
+    sa.Column('user_role', sa.Enum('USER', 'APPROVER', 'MANAGER', 'ADMIN', name='rolesenum'), nullable=True),
+    sa.Column('admin_role', sa.Enum('USER', 'APPROVER', 'MANAGER', 'ADMIN', name='rolesenum'), nullable=True),
+    sa.Column('approver_role', sa.Enum('USER', 'APPROVER', 'MANAGER', 'ADMIN', name='rolesenum'), nullable=True),
+    sa.Column('manager_role', sa.Enum('USER', 'APPROVER', 'MANAGER', 'ADMIN', name='rolesenum'), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_roles_admin'), 'roles', ['admin'], unique=False)
-    op.create_index(op.f('ix_roles_approver'), 'roles', ['approver'], unique=False)
+    op.create_index(op.f('ix_roles_admin_role'), 'roles', ['admin_role'], unique=False)
+    op.create_index(op.f('ix_roles_approver_role'), 'roles', ['approver_role'], unique=False)
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
-    op.create_index(op.f('ix_roles_manager'), 'roles', ['manager'], unique=False)
+    op.create_index(op.f('ix_roles_manager_role'), 'roles', ['manager_role'], unique=False)
+    op.create_index(op.f('ix_roles_user_role'), 'roles', ['user_role'], unique=False)
     op.create_table('approved_libraries',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
@@ -124,10 +126,11 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_approved_libraries_name'), table_name='approved_libraries')
     op.drop_index(op.f('ix_approved_libraries_id'), table_name='approved_libraries')
     op.drop_table('approved_libraries')
-    op.drop_index(op.f('ix_roles_manager'), table_name='roles')
+    op.drop_index(op.f('ix_roles_user_role'), table_name='roles')
+    op.drop_index(op.f('ix_roles_manager_role'), table_name='roles')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
-    op.drop_index(op.f('ix_roles_approver'), table_name='roles')
-    op.drop_index(op.f('ix_roles_admin'), table_name='roles')
+    op.drop_index(op.f('ix_roles_approver_role'), table_name='roles')
+    op.drop_index(op.f('ix_roles_admin_role'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_managers_id'), table_name='managers')
     op.drop_index(op.f('ix_managers_fullname'), table_name='managers')

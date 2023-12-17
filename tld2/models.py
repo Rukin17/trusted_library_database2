@@ -15,8 +15,7 @@ class Status(enum.Enum):
     untested = 'untested'
 
 
-
-class Roles(enum.Enum):
+class RolesEnum(enum.Enum):
     USER = 1
     APPROVER = 2
     MANAGER = 3
@@ -55,11 +54,10 @@ class Role(Base):
     __tablename__ = 'roles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user = Column(Boolean, default=True, index=True)
-    admin = Column(Boolean, default=False, index=True)
-    approver = Column(Boolean, default=False, index=True)
-    manager = Column(Boolean, default=False, index=True)
-
+    user_role = Column(Enum(RolesEnum), default=RolesEnum.USER, index=True)
+    admin_role = Column(Enum(RolesEnum), default=None, index=True)
+    approver_role = Column(Enum(RolesEnum), default=None, index=True)
+    manager_role = Column(Enum(RolesEnum), default=None, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship('User', back_populates='roles')
@@ -67,11 +65,13 @@ class Role(Base):
     def __repr__(self):
         return f'Roles {id}'
 
+
 class Company(Base):
     __tablename__ = 'companies'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
+    registered_at = Column(TIMESTAMP, default=datetime.date.today())
 
     approvers = relationship('Approver', back_populates='company')
     managers = relationship('Manager', back_populates='company')
@@ -87,6 +87,7 @@ class Manager(Base):
     fullname = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=True)
+    registered_at = Column(TIMESTAMP, default=datetime.date.today())
 
     company = relationship('Company', back_populates='managers')
 
@@ -102,7 +103,6 @@ class Approver(Base):
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     
-
     user = relationship('User', back_populates='approvers')
     company = relationship('Company', back_populates='approvers')
     approved_libraries = relationship('ApprovedLibrary', back_populates='approver')
