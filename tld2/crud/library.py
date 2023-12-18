@@ -12,7 +12,7 @@ def get_libraries(db: Session, skip : int = 0, limit: int = 100):
 
 
 def create_library(db: Session, name: str):
-    db_lybrary = Library(name=name, status=Status.untested)
+    db_lybrary = Library(name=name, status=Status.UNTESTED)
     db.add(db_lybrary)
     db.commit()
     return db_lybrary

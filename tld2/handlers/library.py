@@ -43,7 +43,7 @@ def approve_library(
     
     db_approver = approver.get_approver_by_id(db=db, id=approver_id)
     if db_approver.is_active:
-        library.change_status(db=db, library=db_library, status=models.Status.approved)
+        library.change_status(db=db, library=db_library, status=models.Status.APPROVED)
         approve =  approved_library.create_approved_library(
             db=db,
             name=db_library.name,
@@ -66,6 +66,6 @@ def ban_library(
     
     db_approver = approver.get_approver_by_id(db=db, id=approver_id)
     if db_approver.is_active:
-        library.change_status(db=db, library=db_library, status=models.Status.malware)
+        library.change_status(db=db, library=db_library, status=models.Status.MALWARE)
     return db_library
 
