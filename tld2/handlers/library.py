@@ -12,7 +12,7 @@ from tld2.crud import library, approver, approved_library
 library_router = APIRouter()
 
 
-@library_router.post('/libraries/', response_model=schemas.Library)
+@library_router.post('/', response_model=schemas.Library)
 def add_library(name: str, db: Session = Depends(get_db)):
     new_library = library.create_library(db, name=name)
     
@@ -22,7 +22,7 @@ def add_library(name: str, db: Session = Depends(get_db)):
 
 
 #TODO сделать авторизацию и взять approver_id 
-@library_router.post('/libraries/{library_id}/approve', response_model=schemas.ApprovedLibrary)
+@library_router.post('/{library_id}/approve', response_model=schemas.ApprovedLibrary)
 def approve_library(library_id: int, approver_id: int, db: Session = Depends(get_db)):
     db_library = library.get_library_by_id(db=db, library_id=library_id)
     if not db_library:
@@ -40,7 +40,7 @@ def approve_library(library_id: int, approver_id: int, db: Session = Depends(get
         return approve
 
 
-@library_router.post('/libraries/{library_id}/ban', response_model=schemas.Library)
+@library_router.post('/{library_id}/ban', response_model=schemas.Library)
 def ban_library(library_id: int, approver_id: int, db: Session = Depends(get_db)):
     db_library = library.get_library_by_id(db=db, library_id=library_id)
     if not db_library:

@@ -13,7 +13,7 @@ from tld2.models import RolesEnum
 approver_router = APIRouter()
 
 
-@approver_router.post('/approvers/', response_model=schemas.Approver)
+@approver_router.post('/', response_model=schemas.Approver)
 def create_approver(email: str, db: Session = Depends(get_db)):
     db_user = user.get_user_by_email(db=db, email=email)
     new_approver = approver.create_approver(
@@ -22,14 +22,14 @@ def create_approver(email: str, db: Session = Depends(get_db)):
         email=email,
         user_id=db_user.id
     )
-    
+
     db_role_instance = get_role_instance_for_user_by_id(db=db, user_id=db_user.id)
     add_new_role_for_user(db=db, role_instance_from_db=db_role_instance, new_role=RolesEnum.APPROVER)
 
     return new_approver
 
 
-@approver_router.post('/approvers/{approver_id}/ban/', response_model=schemas.Approver)
+@approver_router.post('/{approver_id}/ban/', response_model=schemas.Approver)
 def ban_approver(id: int, db: Session = Depends(get_db)):
     db_approver = approver.get_approver_by_id(db=db, id=id)
     db_approver.is_active = False
