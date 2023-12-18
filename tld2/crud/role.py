@@ -20,9 +20,12 @@ def add_new_role_for_user(db: Session, role_instance_from_db: Role, new_role: Ro
 
     elif new_role == RolesEnum.MANAGER:
         role_instance_from_db.manager_role = RolesEnum.MANAGER
-        
+
     elif new_role == RolesEnum.ADMIN:
         role_instance_from_db.admin_role = RolesEnum.ADMIN
 
     db.commit()
     return role_instance_from_db
+
+
+#TODO Delete role

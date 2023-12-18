@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from tld2 import schemas
 from tld2.db import get_db
 from tld2.crud import user
+from tld2.crud.role import create_db_role_for_user
 from tld2.auth import get_current_active_user
 from tld2.models import Role
 
@@ -38,4 +39,11 @@ def create_user(username: str, fullname: str, email: str, password: str, db: Ses
     db_user = user.get_user_by_email(db, email=email)
     if db_user:
         raise HTTPException(status_code=400, detail='Email already registered')
-    return user.create_user(db=db, username=username, fullname=fullname, email=email, password=password)
+    
+    new_user = user.create_user(db=db, username=username, fullname=fullname, email=email, password=password)
+    
+    user_id = user.get_user_by_email(db=db, email=email).id
+    create_db_role_for_user(db=db, user_id=user_id)
+
+    return new_user
+    

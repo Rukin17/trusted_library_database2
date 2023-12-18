@@ -6,7 +6,8 @@ from fastapi import APIRouter
 from tld2 import schemas
 from tld2.db import get_db
 from tld2.crud import user, approver
-from tld2.models import Role
+from tld2.crud.role import add_new_role_for_user, get_role_instance_for_user_by_id
+from tld2.models import RolesEnum
 
 
 approver_router = APIRouter()
@@ -21,6 +22,10 @@ def create_approver(email: str, db: Session = Depends(get_db)):
         email=email,
         user_id=db_user.id
     )
+    
+    db_role_instance = get_role_instance_for_user_by_id(db=db, user_id=db_user.id)
+    add_new_role_for_user(db=db, role_instance_from_db=db_role_instance, new_role=RolesEnum.APPROVER)
+
     return new_approver
 
 
