@@ -1,5 +1,7 @@
 from fastapi import Depends, HTTPException
+from typing import Annotated
 
+from tld2.auth import get_current_active_user
 
 from sqlalchemy.orm import Session
 from fastapi import APIRouter
@@ -13,7 +15,12 @@ library_router = APIRouter()
 
 
 @library_router.post('/', response_model=schemas.Library)
-def add_library(name: str, db: Session = Depends(get_db)):
+def add_library(
+    name: str, 
+    current_user: Annotated[schemas.User, Depends(get_current_active_user)], 
+    db: Session = Depends(get_db)
+    ):
+    
     new_library = library.create_library(db, name=name)
     
     #TODO  authors
@@ -23,7 +30,13 @@ def add_library(name: str, db: Session = Depends(get_db)):
 
 #TODO сделать авторизацию и взять approver_id 
 @library_router.post('/{library_id}/approve', response_model=schemas.ApprovedLibrary)
-def approve_library(library_id: int, approver_id: int, db: Session = Depends(get_db)):
+def approve_library(
+    library_id: int, 
+    approver_id: int, 
+    current_user: Annotated[schemas.User, Depends(get_current_active_user)], 
+    db: Session = Depends(get_db)
+    ):
+   
     db_library = library.get_library_by_id(db=db, library_id=library_id)
     if not db_library:
         raise HTTPException(status_code=404, detail=("Library doesn't exists"))
@@ -41,7 +54,12 @@ def approve_library(library_id: int, approver_id: int, db: Session = Depends(get
 
 
 @library_router.post('/{library_id}/ban', response_model=schemas.Library)
-def ban_library(library_id: int, approver_id: int, db: Session = Depends(get_db)):
+def ban_library(
+    library_id: int, approver_id: int, 
+    current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+    db: Session = Depends(get_db)
+    ):
+
     db_library = library.get_library_by_id(db=db, library_id=library_id)
     if not db_library:
         raise HTTPException(status_code=404, detail=("Library doesn't exists"))
