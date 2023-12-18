@@ -10,9 +10,9 @@ Base = declarative_base()
 
 
 class Status(enum.Enum):
-    approved = 'approved'
-    malware = 'malware'
-    untested = 'untested'
+    APPROVED = 1
+    MALWARE = 2
+    UNTESTED = 3
 
 
 class RolesEnum(enum.Enum):
