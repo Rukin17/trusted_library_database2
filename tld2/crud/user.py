@@ -19,7 +19,13 @@ def get_user_by_email(db: Session, email: str):
 def create_user(db: Session, username: str, fullname: str, email: str, password: str):
     hashed_password = Hasher.get_password_hash(password)
     disabled = False
-    db_user = models.User(username=username, fullname=fullname, email=email, hashed_password=hashed_password, disabled=disabled)
+    db_user = models.User(
+        username=username,
+        fullname=fullname,
+        email=email,
+        hashed_password=hashed_password,
+        disabled=disabled
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

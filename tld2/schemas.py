@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from tld2.models import Status, RolesEnum
 
+
 class User(BaseModel):
     id: int
     username: str
@@ -17,6 +18,7 @@ class UserInDB(User):
 
     class Config:
         from_attributes = True
+
 
 class Library(BaseModel):
     id: int

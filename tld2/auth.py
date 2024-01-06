@@ -29,7 +29,6 @@ class TokenData(BaseModel):
     username: str | None = None
 
 
-
 @dataclass
 class UserInDB:
     id: int
@@ -42,8 +41,14 @@ class UserInDB:
 
 def get_user(db: Session, username: str):
     db_user = user.get_user_by_username(db, username=username)
-    
-    return UserInDB(db_user.id, db_user.username, db_user.fullname, db_user.email, db_user.hashed_password, db_user.disabled)
+    return UserInDB(
+        db_user.id,
+        db_user.username,
+        db_user.fullname,
+        db_user.email,
+        db_user.hashed_password,
+        db_user.disabled,
+    )
 
 
 def authenticate_user(db, username: str, password: str):
@@ -92,4 +97,3 @@ def get_current_active_user(
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
-

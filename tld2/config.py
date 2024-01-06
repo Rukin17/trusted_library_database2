@@ -19,7 +19,7 @@ def load():
         secret_key=os.environ['SECRET_KEY'],
         algorithm=os.environ['ALGORITHM'],
         access_token_expire_minutes=os.environ['ACCESS_TOKEN_EXPIRE_MINUTES'],
-
     )
+
 
 my_config = load()

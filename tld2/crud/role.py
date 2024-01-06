@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from tld2.models import Role, RolesEnum
 
 
+# TODO Delete role
+
+
 def create_db_role_for_user(db: Session, user_id: int):
     db_role_for_user = Role(user_id=user_id)
     db.add(db_role_for_user)
@@ -26,6 +29,3 @@ def add_new_role_for_user(db: Session, role_instance_from_db: Role, new_role: Ro
 
     db.commit()
     return role_instance_from_db
-
-
-#TODO Delete role

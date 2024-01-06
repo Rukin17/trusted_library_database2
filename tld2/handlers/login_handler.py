@@ -16,9 +16,8 @@ login_router = APIRouter()
 
 @login_router.post("/token", response_model=Token)
 def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
-    db: Annotated[sqlalchemy.Engine, Depends(get_db)]
-    ):
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        db: Annotated[sqlalchemy.Engine, Depends(get_db)]):
     user = authenticate_user(db=db, username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
