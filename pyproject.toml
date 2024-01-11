@@ -16,6 +16,8 @@ alembic = "^1.12.1"
 psycopg2-binary = "^2.9.9"
 python-multipart = "^0.0.6"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+types-python-jose = "^3.3.4.20240106"
+types-passlib = "^1.7.7.20240106"
 
 
 [tool.poetry.group.dev.dependencies]

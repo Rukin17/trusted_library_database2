@@ -10,7 +10,7 @@ class Config:
     db_url: str
     secret_key: str
     algorithm: str
-    access_token_expire_minutes: int
+    access_token_expire_minutes: str
 
 
 def load():

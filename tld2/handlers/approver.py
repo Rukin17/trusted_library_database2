@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from typing import Annotated
 
 from tld2.auth import get_current_active_user
@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from tld2 import schemas
 from tld2.db import get_db
 from tld2.crud import user, approver
-from tld2.crud.role import add_new_role_for_user, get_role_instance_for_user_by_id
+from tld2.crud.role import get_roles, add_role_for_user
 from tld2.models import RolesEnum
 
 
@@ -28,8 +28,10 @@ def create_approver(
         user_id=db_user.id
     )
 
-    db_role_instance = get_role_instance_for_user_by_id(db=db, user_id=db_user.id)
-    add_new_role_for_user(db=db, role_instance_from_db=db_role_instance, new_role=RolesEnum.APPROVER)
+    roles = get_roles(db=db, user_id=db_user.id)
+    if RolesEnum.APPROVER in roles:
+        raise HTTPException(status_code=403, detail='This role is already in the database')
+    add_role_for_user(db=db, user_id=db_user.id, role=RolesEnum.APPROVER)
 
     return new_approver
 

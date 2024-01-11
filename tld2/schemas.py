@@ -62,10 +62,7 @@ class ApprovedLibrary(BaseModel):
 class Role(BaseModel):
     id: int
     user_id: int
-    user_role: RolesEnum
-    approver_role: RolesEnum | None
-    manager_role: RolesEnum | None
-    admin_role: RolesEnum | None
+    role: RolesEnum
 
     class Config:
         from_attributes = True

@@ -9,11 +9,10 @@ from tld2.handlers.approver import approver_router
 from tld2.handlers.company import company_router
 from tld2.handlers.library import library_router
 
-from tld2 import models
-from tld2.db import engine
+from tld2.db import engine, Base
 
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()

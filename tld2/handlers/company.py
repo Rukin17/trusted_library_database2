@@ -10,7 +10,7 @@ from tld2 import schemas
 from tld2.db import get_db
 from tld2.crud import company, approver
 from tld2.models import Role
-from tld2.handlers.user import get_roles
+from tld2.crud.role import get_roles
 
 
 company_router = APIRouter()
@@ -20,8 +20,7 @@ company_router = APIRouter()
 def create_company(
         name: str,
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
-        db: Session = Depends(get_db),
-        roles: list[Role] = Depends(get_roles)):
+        db: Session = Depends(get_db)):
     # if Roles.ADMIN in roles:
     return company.create_company(db, name=name)
     # else:
