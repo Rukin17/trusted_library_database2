@@ -1,8 +1,9 @@
 import datetime
 import enum
 
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Enum, Table, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Enum as PgEnum
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Table, Boolean
+from sqlalchemy.orm import relationship, mapped_column, Mapped
 from tld2.db import Base
 
 
@@ -50,10 +51,7 @@ class Role(Base):
     __tablename__ = 'roles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_role = Column(Enum(RolesEnum), default=RolesEnum.USER, index=True)
-    admin_role = Column(Enum(RolesEnum), default=None, index=True)
-    approver_role = Column(Enum(RolesEnum), default=None, index=True)
-    manager_role = Column(Enum(RolesEnum), default=None, index=True)
+    role: Mapped[RolesEnum] = mapped_column(PgEnum(RolesEnum), index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship('User', back_populates='roles')
@@ -127,7 +125,7 @@ class Library(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
-    status = Column(Enum(Status), index=True)
+    status: Mapped[Status] = mapped_column(PgEnum(Status), index=True)
 
     approved_libraries = relationship('ApprovedLibrary', back_populates='library')
     authors = relationship('Author', secondary=association_table, back_populates='libraries')
