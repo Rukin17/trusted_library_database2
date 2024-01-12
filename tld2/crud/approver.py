@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
 from tld2 import models
+from tld2 import config
+
 
 
 def get_approver_by_email(db: Session, email: str):
