@@ -4,7 +4,9 @@ from typing import List
 from tld2.models import Role, RolesEnum
 
 
+
 # TODO Delete role
+12
 
 
 def add_role_for_user(db: Session, user_id: int, role: RolesEnum) -> Role:
