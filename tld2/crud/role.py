@@ -1,14 +1,12 @@
+from typing import List
+
 from sqlalchemy.orm import Session
 
-from typing import List
-from tld2.models import Role, RolesEnum
-
+from tld2.models import Role
+from tld2.models import RolesEnum
 
 
 # TODO Delete role
-12
-werwer
-
 
 
 def add_role_for_user(db: Session, user_id: int, role: RolesEnum) -> Role:
