@@ -1,18 +1,22 @@
-from pydantic import BaseModel
-from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException, status
-
-from typing import Annotated
 from dataclasses import dataclass
-from jose import JWTError, jwt
-from tld2.hashing import Hasher
+from datetime import datetime
+from datetime import timedelta
+from typing import Annotated
+
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from jose import JWTError
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from tld2.db import get_db
+
 from tld2 import schemas
 from tld2.config import my_config
-
 from tld2.crud import user
-from fastapi.security import OAuth2PasswordBearer
+from tld2.db import get_db
+from tld2.hashing import Hasher
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

@@ -1,15 +1,14 @@
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
 
-from tld2.handlers.user import user_router
-from tld2.handlers.login_handler import login_router
+from tld2.db import Base
+from tld2.db import engine
 from tld2.handlers.approver import approver_router
 from tld2.handlers.company import company_router
 from tld2.handlers.library import library_router
-
-from tld2.db import engine, Base
+from tld2.handlers.login_handler import login_router
+from tld2.handlers.user import user_router
 
 
 Base.metadata.create_all(bind=engine)

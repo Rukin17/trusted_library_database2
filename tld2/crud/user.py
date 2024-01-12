@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from tld2.hashing import Hasher
 from tld2 import models
+from tld2.hashing import Hasher
 
 
 def get_user_by_id(db: Session, user_id: int):

@@ -1,9 +1,18 @@
 import datetime
 import enum
 
+from sqlalchemy import Boolean
+from sqlalchemy import Column
 from sqlalchemy import Enum as PgEnum
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Table, Boolean
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy import TIMESTAMP
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+
 from tld2.db import Base
 
 

@@ -1,14 +1,15 @@
 """comment
 
 Revision ID: e3caaba6a0e3
-Revises: 
+Revises:
 Create Date: 2024-01-12 00:44:45.125530
 
 """
-from typing import Sequence, Union
+from typing import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 
 # revision identifiers, used by Alembic.

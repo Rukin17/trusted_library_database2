@@ -1,13 +1,17 @@
-import sqlalchemy
-
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status, APIRouter
+import sqlalchemy
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from tld2.auth import authenticate_user, create_access_token, Token, ACCESS_TOKEN_EXPIRE_MINUTES
-
+from tld2.auth import ACCESS_TOKEN_EXPIRE_MINUTES
+from tld2.auth import authenticate_user
+from tld2.auth import create_access_token
+from tld2.auth import Token
 from tld2.db import get_db
 
 

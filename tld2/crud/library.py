@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
-from tld2.models import Library, Status
+from tld2.models import Library
+from tld2.models import Status
 
 
 def get_library_by_id(db: Session, library_id: int):

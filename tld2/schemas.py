@@ -1,5 +1,7 @@
 from pydantic import BaseModel
-from tld2.models import Status, RolesEnum
+
+from tld2.models import RolesEnum
+from tld2.models import Status
 
 
 class User(BaseModel):

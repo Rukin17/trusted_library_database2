@@ -1,14 +1,17 @@
-from fastapi import Depends, HTTPException
 from typing import Annotated
 
-from tld2.auth import get_current_active_user
-from sqlalchemy.orm import Session
 from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from tld2 import schemas
+from tld2.auth import get_current_active_user
+from tld2.crud import approver
+from tld2.crud import user
+from tld2.crud.role import add_role_for_user
+from tld2.crud.role import get_roles
 from tld2.db import get_db
-from tld2.crud import user, approver
-from tld2.crud.role import get_roles, add_role_for_user
 from tld2.models import RolesEnum
 
 
