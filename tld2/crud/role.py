@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from tld2.models import Role
 from tld2.models import RolesEnum
 
-
 # TODO Delete role
 
 
