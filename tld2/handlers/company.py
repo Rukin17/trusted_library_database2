@@ -9,8 +9,6 @@ from fastapi import APIRouter
 from tld2 import schemas
 from tld2.db import get_db
 from tld2.crud import company, approver
-from tld2.models import Role
-from tld2.crud.role import get_roles
 
 
 company_router = APIRouter()
