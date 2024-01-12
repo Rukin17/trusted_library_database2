@@ -1,12 +1,19 @@
 import datetime
 import enum
 
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, Enum, Table, Boolean
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import Enum as PgEnum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Table
+from sqlalchemy import TIMESTAMP
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from tld2.db import Base
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from tld2.db import Base
 
 
 class Status(enum.Enum):
@@ -20,7 +27,6 @@ class RolesEnum(enum.Enum):
     APPROVER = 2
     MANAGER = 3
     ADMIN = 4
-
 
 
 association_table = Table(
@@ -42,7 +48,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     disabled = Column(Boolean, index=True)
     registered_at = Column(TIMESTAMP, default=datetime.date.today())
-    
+
     approvers = relationship('Approver', back_populates='user')
     roles = relationship('Role', back_populates='user')
 
@@ -54,10 +60,7 @@ class Role(Base):
     __tablename__ = 'roles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_role = Column(Enum(RolesEnum), default=RolesEnum.USER, index=True)
-    admin_role = Column(Enum(RolesEnum), default=None, index=True)
-    approver_role = Column(Enum(RolesEnum), default=None, index=True)
-    manager_role = Column(Enum(RolesEnum), default=None, index=True)
+    role: Mapped[RolesEnum] = mapped_column(PgEnum(RolesEnum), index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
 
     user = relationship('User', back_populates='roles')
@@ -94,7 +97,7 @@ class Manager(Base):
 
 class Approver(Base):
     __tablename__ = 'approvers'
-    
+
     id = Column(Integer, primary_key=True, index=True)
     fullname = Column(String, index=True)
     email = Column(String, unique=True, index=True)
@@ -102,7 +105,7 @@ class Approver(Base):
     is_active = Column(Boolean, default=True)
     company_id = Column(Integer, ForeignKey('companies.id'), nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    
+
     user = relationship('User', back_populates='approvers')
     company = relationship('Company', back_populates='approvers')
     approved_libraries = relationship('ApprovedLibrary', back_populates='approver')
@@ -124,21 +127,21 @@ class ApprovedLibrary(Base):
 
     def __repr__(self):
         return f'Approved Library {self.id}, {self.name}'
-    
+
 
 class Library(Base):
     __tablename__ = 'libraries'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
-    status = Column(Enum(Status), index=True)
+    status: Mapped[Status] = mapped_column(PgEnum(Status), index=True)
 
     approved_libraries = relationship('ApprovedLibrary', back_populates='library')
     authors = relationship('Author', secondary=association_table, back_populates='libraries')
- 
+
     def __repr__(self):
         return f'Library {self.id}, {self.name}'
-    
+
 
 class Author(Base):
     __tablename__ = 'authors'

@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from tld2.models import Status, RolesEnum
+
+from tld2.models import RolesEnum
+from tld2.models import Status
+
 
 class User(BaseModel):
     id: int
@@ -17,6 +20,7 @@ class UserInDB(User):
 
     class Config:
         from_attributes = True
+
 
 class Library(BaseModel):
     id: int
@@ -60,10 +64,7 @@ class ApprovedLibrary(BaseModel):
 class Role(BaseModel):
     id: int
     user_id: int
-    user_role: RolesEnum
-    approver_role: RolesEnum | None
-    manager_role: RolesEnum | None
-    admin_role: RolesEnum | None
+    role: RolesEnum
 
     class Config:
         from_attributes = True

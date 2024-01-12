@@ -1,13 +1,14 @@
 from sqlalchemy.orm import Session
 
-from tld2.models import Library, Status
+from tld2.models import Library
+from tld2.models import Status
 
 
 def get_library_by_id(db: Session, library_id: int):
-    return db.query(Library).filter(Library.id==library_id).first()
+    return db.query(Library).filter(Library.id == library_id).first()
 
 
-def get_libraries(db: Session, skip : int = 0, limit: int = 100):
+def get_libraries(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Library).offset(skip).limit(limit).all()
 
 

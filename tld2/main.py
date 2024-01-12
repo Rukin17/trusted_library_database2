@@ -1,19 +1,17 @@
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
 
-from tld2.handlers.user import user_router
-from tld2.handlers.login_handler import login_router
+from tld2.db import Base
+from tld2.db import engine
 from tld2.handlers.approver import approver_router
 from tld2.handlers.company import company_router
 from tld2.handlers.library import library_router
+from tld2.handlers.login_handler import login_router
+from tld2.handlers.user import user_router
 
-from tld2 import models
-from tld2.db import engine
 
-
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
@@ -32,4 +30,3 @@ app.include_router(main_api_router)
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

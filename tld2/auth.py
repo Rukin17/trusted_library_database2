@@ -1,18 +1,22 @@
-from pydantic import BaseModel
-from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException, status
-
-from typing import Annotated
 from dataclasses import dataclass
-from jose import JWTError, jwt
-from tld2.hashing import Hasher
+from datetime import datetime
+from datetime import timedelta
+from typing import Annotated
+
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from jose import JWTError
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from tld2.db import get_db
+
 from tld2 import schemas
 from tld2.config import my_config
-
 from tld2.crud import user
-from fastapi.security import OAuth2PasswordBearer
+from tld2.db import get_db
+from tld2.hashing import Hasher
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -26,8 +30,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str | None = None
-
+    username: str
 
 
 @dataclass
@@ -42,8 +45,14 @@ class UserInDB:
 
 def get_user(db: Session, username: str):
     db_user = user.get_user_by_username(db, username=username)
-    
-    return UserInDB(db_user.id, db_user.username, db_user.fullname, db_user.email, db_user.hashed_password, db_user.disabled)
+    return UserInDB(
+        db_user.id,
+        db_user.username,
+        db_user.fullname,
+        db_user.email,
+        db_user.hashed_password,
+        db_user.disabled,
+    )
 
 
 def authenticate_user(db, username: str, password: str):
@@ -55,7 +64,7 @@ def authenticate_user(db, username: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict[str, str | datetime], expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -74,7 +83,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session 
     )
     try:
         payload = jwt.decode(token, my_config.secret_key, algorithms=[my_config.algorithm])
-        username: str = payload.get("sub")
+        username = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
@@ -92,4 +101,3 @@ def get_current_active_user(
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
-
