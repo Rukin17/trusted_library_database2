@@ -14,8 +14,6 @@ def add_role_for_user(db: Session, user_id: int, role: RolesEnum) -> Role:
     return role_for_user
 
 
-
-
 def get_roles(db: Session, user_id: int) -> List[Role]:
     return db.query(Role).filter(Role.user_id == user_id).all()
 
