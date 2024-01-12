@@ -9,6 +9,7 @@ from tld2.models import Role, RolesEnum
 12
 
 
+
 def add_role_for_user(db: Session, user_id: int, role: RolesEnum) -> Role:
     role_for_user = Role(user_id=user_id, role=role)
     db.add(role_for_user)
