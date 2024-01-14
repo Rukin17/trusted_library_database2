@@ -23,6 +23,3 @@ def change_status(db: Session, library: Library, status: Status):
     library.status = status
     db.commit()
     return library
-
-
-123
