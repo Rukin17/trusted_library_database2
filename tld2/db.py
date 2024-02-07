@@ -1,9 +1,8 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from tld2.config import my_config
-
 
 engine = create_engine(my_config.db_url)
 db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

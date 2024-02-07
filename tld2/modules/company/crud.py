@@ -1,14 +1,15 @@
 from sqlalchemy.orm import Session
 
 from tld2 import models
+from tld2.models import Company
 
 
-def create_company(db: Session, name: str):
+def create_company(db: Session, name: str) -> Company:
     db_company = models.Company(name=name)
     db.add(db_company)
     db.commit()
     return db_company
 
 
-def get_company_by_id(db: Session, id: int):
+def get_company_by_id(db: Session, id: int) -> Company | None:
     return db.query(models.Company).filter(models.Company.id == id).first()

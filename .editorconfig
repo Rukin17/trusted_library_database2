@@ -27,6 +27,6 @@ indent_style = tab
 
 [tool:isort]
 known_first_party=tests
-multi_line_output=3
+multi_line_output=1
 include_trailing_comma=True
 line_length = 120

@@ -8,12 +8,11 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from tld2.auth import ACCESS_TOKEN_EXPIRE_MINUTES
-from tld2.auth import authenticate_user
-from tld2.auth import create_access_token
-from tld2.auth import Token
+from .auth import authenticate_user
+from .auth import create_access_token
+from .auth import Token
+from tld2.config import my_config
 from tld2.db import get_db
-
 
 login_router = APIRouter()
 
@@ -29,7 +28,7 @@ def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=int(my_config.access_token_expire_minutes))
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )

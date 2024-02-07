@@ -7,12 +7,13 @@ from sqlalchemy.orm import Session
 
 from tld2 import models
 from tld2 import schemas
-from tld2.auth import get_current_active_user
-from tld2.crud import approved_library
-from tld2.crud import approver
-from tld2.crud import library
+from tld2.crud.approved_library import create_approved_library
 from tld2.db import get_db
-
+from tld2.modules.approver.crud import get_approver_by_id
+from tld2.modules.auth.auth import get_current_active_user
+from tld2.modules.library.crud import change_status
+from tld2.modules.library.crud import create_library
+from tld2.modules.library.crud import get_library_by_id
 
 library_router = APIRouter()
 
@@ -22,7 +23,7 @@ def add_library(
         name: str,
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
         db: Session = Depends(get_db)):
-    new_library = library.create_library(db, name=name)
+    new_library = create_library(db, name=name)
     # TODO  authors
 
     return new_library
@@ -35,14 +36,15 @@ def approve_library(
         approver_id: int,
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
         db: Session = Depends(get_db)):
-    db_library = library.get_library_by_id(db=db, library_id=library_id)
+    db_library = get_library_by_id(db=db, library_id=library_id)
     if not db_library:
         raise HTTPException(status_code=404, detail=("Library doesn't exists"))
 
-    db_approver = approver.get_approver_by_id(db=db, id=approver_id)
-    if db_approver.is_active:
-        library.change_status(db=db, library=db_library, status=models.Status.APPROVED)
-        approve = approved_library.create_approved_library(
+    db_approver = get_approver_by_id(db=db, id=approver_id)
+    if db_approver and db_approver.is_active:
+        change_status(db=db, library=db_library, status=models.Status.APPROVED)
+        # TODO Бага: если библиотека аппрувнута, потом бан, потом снова аппрув и пытается добавить в аппрув либрари
+        approve = create_approved_library(
             db=db,
             name=db_library.name,
             approver_id=approver_id,
@@ -56,11 +58,11 @@ def ban_library(
         library_id: int, approver_id: int,
         current_user: Annotated[schemas.User, Depends(get_current_active_user)],
         db: Session = Depends(get_db)):
-    db_library = library.get_library_by_id(db=db, library_id=library_id)
+    db_library = get_library_by_id(db=db, library_id=library_id)
     if not db_library:
         raise HTTPException(status_code=404, detail=("Library doesn't exists"))
 
-    db_approver = approver.get_approver_by_id(db=db, id=approver_id)
-    if db_approver.is_active:
-        library.change_status(db=db, library=db_library, status=models.Status.MALWARE)
+    db_approver = get_approver_by_id(db=db, id=approver_id)
+    if db_approver and db_approver.is_active:
+        change_status(db=db, library=db_library, status=models.Status.MALWARE)
     return db_library
