@@ -31,7 +31,20 @@ pre-commit = "^3.6.0"
 isort = "^5.13.2"
 
 
+[tool.mypy]
+exclude = [
+'prometheus_data\.py',
+'.venv/',
+'venv/',
+'migrations.*',
+]
 
+
+[tool.flake8]
+exclude = [
+'migrations.*',
+'versions.*',
+]
 
 [tool.poetry.group.test.dependencies]
 deal = "^4.24.3"

@@ -4,7 +4,9 @@ from sqlalchemy.orm import sessionmaker
 
 from tld2.config import my_config
 
+
 engine = create_engine(my_config.db_url)
+
 db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
