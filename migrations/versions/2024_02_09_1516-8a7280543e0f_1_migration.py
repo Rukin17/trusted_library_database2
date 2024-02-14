@@ -1,8 +1,8 @@
-"""1 миграция
+"""1 migration
 
-Revision ID: 19454f99175f
+Revision ID: 8a7280543e0f
 Revises:
-Create Date: 2024-02-05 12:28:11.587907
+Create Date: 2024-02-09 15:16:05.219400
 
 """
 from typing import Sequence
@@ -11,8 +11,9 @@ from typing import Union
 import sqlalchemy as sa
 from alembic import op
 
+
 # revision identifiers, used by Alembic.
-revision: str = '19454f99175f'
+revision: str = '8a7280543e0f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -54,9 +55,7 @@ def upgrade() -> None:
     sa.Column('registered_at', sa.TIMESTAMP(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_users_disabled'), 'users', ['disabled'], unique=False)
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
-    op.create_index(op.f('ix_users_fullname'), 'users', ['fullname'], unique=False)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
     op.create_table('approvers',
@@ -74,6 +73,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_approvers_email'), 'approvers', ['email'], unique=True)
     op.create_index(op.f('ix_approvers_fullname'), 'approvers', ['fullname'], unique=False)
     op.create_index(op.f('ix_approvers_id'), 'approvers', ['id'], unique=False)
+    op.create_index(op.f('ix_approvers_user_id'), 'approvers', ['user_id'], unique=False)
     op.create_table('association_table',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('library_id', sa.Integer(), nullable=False),
@@ -82,6 +82,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['library_id'], ['libraries.id'], ),
     sa.PrimaryKeyConstraint('id', 'library_id', 'author_id')
     )
+    op.create_index(op.f('ix_association_table_author_id'), 'association_table', ['author_id'], unique=False)
+    op.create_index(op.f('ix_association_table_library_id'), 'association_table', ['library_id'], unique=False)
     op.create_table('managers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('fullname', sa.String(), nullable=False),
@@ -92,7 +94,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_managers_email'), 'managers', ['email'], unique=True)
-    op.create_index(op.f('ix_managers_fullname'), 'managers', ['fullname'], unique=False)
     op.create_index(op.f('ix_managers_id'), 'managers', ['id'], unique=False)
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -101,8 +102,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
-    op.create_index(op.f('ix_roles_role'), 'roles', ['role'], unique=False)
+    op.create_index(op.f('ix_roles_user_id'), 'roles', ['user_id'], unique=False)
     op.create_table('approved_libraries',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -122,23 +122,22 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_approved_libraries_name'), table_name='approved_libraries')
     op.drop_index(op.f('ix_approved_libraries_id'), table_name='approved_libraries')
     op.drop_table('approved_libraries')
-    op.drop_index(op.f('ix_roles_role'), table_name='roles')
-    op.drop_index(op.f('ix_roles_id'), table_name='roles')
+    op.drop_index(op.f('ix_roles_user_id'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_managers_id'), table_name='managers')
-    op.drop_index(op.f('ix_managers_fullname'), table_name='managers')
     op.drop_index(op.f('ix_managers_email'), table_name='managers')
     op.drop_table('managers')
+    op.drop_index(op.f('ix_association_table_library_id'), table_name='association_table')
+    op.drop_index(op.f('ix_association_table_author_id'), table_name='association_table')
     op.drop_table('association_table')
+    op.drop_index(op.f('ix_approvers_user_id'), table_name='approvers')
     op.drop_index(op.f('ix_approvers_id'), table_name='approvers')
     op.drop_index(op.f('ix_approvers_fullname'), table_name='approvers')
     op.drop_index(op.f('ix_approvers_email'), table_name='approvers')
     op.drop_table('approvers')
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_index(op.f('ix_users_id'), table_name='users')
-    op.drop_index(op.f('ix_users_fullname'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
-    op.drop_index(op.f('ix_users_disabled'), table_name='users')
     op.drop_table('users')
     op.drop_index(op.f('ix_libraries_status'), table_name='libraries')
     op.drop_index(op.f('ix_libraries_name'), table_name='libraries')

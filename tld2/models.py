@@ -53,7 +53,7 @@ class User(Base):
     roles = relationship('Role', back_populates='user')
 
     def __repr__(self):
-        return f'Company {self.id}, {self.fullname}'
+        return f'id {self.id}, {self.fullname}'
 
 
 class Role(Base):
@@ -62,6 +62,7 @@ class Role(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     role: Mapped[RolesEnum] = mapped_column(PgEnum(RolesEnum))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), index=True)
+    registered_at: Mapped[datetime.date] = mapped_column(TIMESTAMP, default=datetime.date.today())
 
     user = relationship('User', back_populates='roles')
 

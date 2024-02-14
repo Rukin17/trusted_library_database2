@@ -1,20 +1,23 @@
-from sqlalchemy import create_engine
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 from tld2.config import my_config
 
 
-engine = create_engine(my_config.db_url)
+engine = create_async_engine(my_config.async_db_url, future=True, echo=True,)
 
-db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 Base = declarative_base()
 
 
-def get_db():
-    db = db_session()
+async def get_db() -> AsyncGenerator:
+    db: AsyncSession = async_session()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()

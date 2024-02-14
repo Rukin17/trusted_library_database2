@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from jose import JWTError
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from tld2 import schemas
 from tld2.config import my_config
@@ -45,8 +45,8 @@ class UserInDB:
     disabled: bool
 
 
-def get_user(db: Session, username: str) -> UserInDB:
-    db_user = get_user_by_username(db, username=username)
+async def get_user(db: AsyncSession, username: str) -> UserInDB:
+    db_user = await get_user_by_username(db, username=username)
     if db_user:
         user_in_db = UserInDB(
             db_user.id,
@@ -59,8 +59,8 @@ def get_user(db: Session, username: str) -> UserInDB:
     return user_in_db
 
 
-def authenticate_user(db, username: str, password: str) -> UserInDB | Literal[False]:
-    user = get_user(db, username=username)
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> UserInDB | Literal[False]:
+    user = await get_user(db, username=username)
     if not user:
         return False
     if not Hasher.verify_password(password, user.hashed_password):
@@ -68,7 +68,7 @@ def authenticate_user(db, username: str, password: str) -> UserInDB | Literal[Fa
     return user
 
 
-def create_access_token(data: dict[str, str | datetime], expires_delta: timedelta | None = None) -> str:
+async def create_access_token(data: dict[str, str | datetime], expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -79,7 +79,8 @@ def create_access_token(data: dict[str, str | datetime], expires_delta: timedelt
     return encoded_jwt
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)) -> UserInDB:
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: AsyncSession = Depends(get_db)) \
+        -> UserInDB:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -93,13 +94,13 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session 
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(db, username=token_data.username)
+    user = await get_user(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
 
-def get_current_active_user(current_user: Annotated[schemas.User, Depends(get_current_user)]) -> User:
+async def get_current_active_user(current_user: Annotated[schemas.User, Depends(get_current_user)]) -> User:
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

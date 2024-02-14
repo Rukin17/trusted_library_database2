@@ -1,27 +1,40 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from tld2 import models
 from tld2.models import Approver
 
 
-def get_approver_by_email(db: Session, email: str) -> Approver | None:
-    return db.query(models.Approver).filter(models.Approver.email == email).first()
+async def get_approver_by_email(db: AsyncSession, email: str) -> Approver | None:
+    query = select(Approver).where(Approver.email == email)
+    result = await db.execute(query)
+    approver_row = result.fetchone()
+    if approver_row:
+        return approver_row[0]
+    return None
 
 
-def get_approver_by_id(db: Session, id: int) -> Approver | None:
-    return db.query(models.Approver).filter(models.Approver.id == id).first()
+async def get_approver_by_id(db: AsyncSession, id: int) -> Approver | None:
+    query = select(Approver).where(Approver.id == id)
+    result = await db.execute(query)
+    approver_row = result.fetchone()
+    if approver_row:
+        return approver_row[0]
+    return None
 
 
-def get_approvers(db: Session, skip: int = 0, limit: int = 100) -> list[Approver]:
-    return db.query(models.Approver).offset(skip).limit(limit).all()
+async def get_approvers(db: AsyncSession, skip: int = 0, limit: int = 100):
+    query = select(Approver)
+    result = await db.execute(query)
+    return result.all()
 
 
-def create_approver(db: Session, fullname: str, email: str, user_id: int) -> Approver:
+async def create_approver(db: AsyncSession, fullname: str, email: str, user_id: int) -> Approver:
     db_approver = models.Approver(
         fullname=fullname,
         email=email,
         user_id=user_id
     )
     db.add(db_approver)
-    db.commit()
+    await db.commit()
     return db_approver
