@@ -13,10 +13,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+from tld2.config import my_config
 # add your model's MetaData object here
 # for 'autogenerate' support
-from tld2.db import Base
-from tld2.config import my_config
+from tld2.models import Base
+
 target_metadata = Base.metadata
 # target_metadata = None
 
@@ -24,7 +25,7 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option('sqlalchemy.url', my_config.db_url)
+config.set_main_option('sqlalchemy.url', my_config.async_db_url)
 
 
 def run_migrations_offline() -> None:
